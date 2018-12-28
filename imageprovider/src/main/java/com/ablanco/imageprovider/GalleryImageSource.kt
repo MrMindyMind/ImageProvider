@@ -29,7 +29,7 @@ internal class GalleryImageSource(private val activity: Activity) : ImageProvide
     private fun onImageResult(data: Intent?): ImageProviderResult {
         try {
             return activity.contentResolver.openFileDescriptor(data?.data, "r")?.use {
-                ImageProviderResultImpl(null, BitmapFactory.decodeFileDescriptor(it.fileDescriptor))
+                ImageProviderResultImpl(data?.data, BitmapFactory.decodeFileDescriptor(it.fileDescriptor))
             } ?: ImageProviderResultImpl.empty()
         } catch (e: Exception) {
             e.printStackTrace()
