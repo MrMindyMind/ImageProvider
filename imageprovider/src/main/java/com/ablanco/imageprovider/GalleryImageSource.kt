@@ -15,22 +15,26 @@ internal class GalleryImageSource(private val activity: Activity) : ImageProvide
         RequestHandler()
     }
 
-    override fun getImage(callback: (Bitmap?) -> Unit) {
+    override fun getImage(callback: (ImageProviderResult) -> Unit) {
         val intent = Intent(Intent.ACTION_PICK).setType("image/*")
         requestHandler.startForResult(activity, intent) { result, data ->
-            callback(if (result == Activity.RESULT_OK) onImageResult(data) else null)
+            callback(if (result == Activity.RESULT_OK)
+                onImageResult(data)
+            else
+                ImageProviderResultImpl.empty()
+            )
         }
     }
 
-    private fun onImageResult(data: Intent?): Bitmap? {
+    private fun onImageResult(data: Intent?): ImageProviderResult {
         try {
             return activity.contentResolver.openFileDescriptor(data?.data, "r")?.use {
-                BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
-            }
+                ImageProviderResultImpl(null, BitmapFactory.decodeFileDescriptor(it.fileDescriptor))
+            } ?: ImageProviderResultImpl.empty()
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return null
+        return ImageProviderResultImpl.empty()
     }
 
 }

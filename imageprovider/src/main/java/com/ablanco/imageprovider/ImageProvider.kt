@@ -13,7 +13,7 @@ class ImageProvider(private val activity: Activity) {
     private var currentSelectedSource: ImageProviderSource? = null
 
     @SuppressLint("SwitchIntDef")
-    fun getImage(imageSource: ImageSource, callback: (Bitmap?) -> Unit) {
+    fun getImage(imageSource: ImageSource, callback: (ImageProviderResult) -> Unit) {
         currentSelectedSource = when (imageSource) {
             ImageSource.CAMERA -> CameraImageSource(activity)
             ImageSource.GALLERY -> GalleryImageSource(activity)

@@ -2,7 +2,6 @@ package com.ablanco.imageprovider
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
@@ -20,7 +19,7 @@ internal class CameraImageSource(private val activity: Activity) : ImageProvider
         RequestHandler()
     }
 
-    override fun getImage(callback: (Bitmap?) -> Unit) {
+    override fun getImage(callback: (ImageProviderResult) -> Unit) {
         /*Create a content:// Uri to let Camera app to store the photo*/
         photoFileUri = UriUtils.createTempContentUri(activity)
 
@@ -28,12 +27,15 @@ internal class CameraImageSource(private val activity: Activity) : ImageProvider
         photoFileUri?.let { cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFileUri) }
         cameraIntent.resolveActivity(activity.packageManager)?.let {
             requestHandler.startForResult(activity, cameraIntent) { result, _ ->
-                callback(if (result == Activity.RESULT_OK) onImageResult() else null)
+                callback(if (result == Activity.RESULT_OK)
+                    onImageResult()
+                else
+                    ImageProviderResultImpl.empty())
             }
         }
     }
 
-    private fun onImageResult(): Bitmap? {
+    private fun onImageResult(): ImageProviderResult {
         var bitmap = try {
             BitmapFactory.decodeStream(activity.contentResolver.openInputStream(photoFileUri))
         } catch (e: Throwable) {
@@ -52,6 +54,7 @@ internal class CameraImageSource(private val activity: Activity) : ImageProvider
             }
         }
 
-        return bitmap
+        return ImageProviderResultImpl(photoFileUri, bitmap)
     }
+
 }

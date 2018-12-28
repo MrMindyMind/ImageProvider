@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         btFromCamera.setOnClickListener {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-                imageProvider.getImage(ImageSource.CAMERA, ivPhoto::setImageBitmap)
+                imageProvider.getImage(ImageSource.CAMERA) { result -> ivPhoto.setImageBitmap(result.bitmap) }
             } else {
                 ActivityCompat.requestPermissions(
                     this,
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btFromGallery.setOnClickListener {
-            imageProvider.getImage(ImageSource.GALLERY, ivPhoto::setImageBitmap)
+            imageProvider.getImage(ImageSource.GALLERY) { result -> ivPhoto.setImageBitmap(result.bitmap) }
         }
     }
 
@@ -42,6 +42,6 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        imageProvider.getImage(ImageSource.CAMERA, ivPhoto::setImageBitmap)
+        imageProvider.getImage(ImageSource.CAMERA) { result -> ivPhoto.setImageBitmap(result.bitmap) }
     }
 }
